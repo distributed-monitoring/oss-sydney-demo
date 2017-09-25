@@ -1,0 +1,78 @@
+* 現状できていること
+メモリのusedが徐々に増えており、将来的に一定量を超えそうな際に、
+notification/log_notify.log にWARNING内容を出力、
+およびOpenStack Congress にデータ書き込み。
+
+注）Congressなのは特にVM等作らなくても試せることと、私が慣れてるから使っただけで、
+例えばnova コマンドでサービスdisableしたり、とかも同様にできるはずです。
+
+
+* データの流れイメージ
+
+(メモリ情報) -> collectd-memory -> (collectd) -> collectd-write_redis -> (redis rawdata)
+
+(redis rawdata) -> collectd-python("/opt/dma/lib/analysis.py")
+ -> (collectd) -> collectd-write_redis -> (redis analysis result)
+
+(redis analysis result) -> collectd-threshold
+ -> collectd-python("/opt/dma/lib/write_congress.py") -> OpenStack Congress
+
+
+* デモ起動手順（collectd起動）
+ 1. collectd、scikit-learn、をインストール。
+
+ 2. /opt/dma/lib を作って、配下にcollectd-pythonが使う analysis と write_congress のpyファイルを置く（後述）。
+　・analysis: redisからrawデータを読み出して解析して、結果をredisに戻すモジュール。
+　・write_congress: transmitter相当のモジュール、OpenStackコマンドを叩く
+
+ 3. 本ディレクトリにあるdma.conf を/etc/collectd/collectd.conf.d 配下に置く。
+
+ 4. collectd起動
+
+ 5. Congressのdatasource作成
+   $ openstack congress datasource create doctor doctor
+
+
+* collectd-python用のスクリプト
+
+ * analysis/analysis_increase.py (/opt/dma/lib/analysis.py としてコピーorリンク)
+ 過去20個のmemory-usedデータを読み出して整形、
+ 「時刻 － memory-used」 の線形回帰で60秒後のmemory-usedを予測して、
+ collectdの"localhost/dma/memory"というキーの値としてcollectdの出力にする。
+
+ 入力のインターフェース等の扱いは要検討。
+
+ 実際にはSVM等を使う。事前の学習フェーズで学習データを生成（joblib.dump）して、
+ 運用フェーズでは学習データ読み出し（joblib.load）とrawデータ読み出しから
+ 正常、異常の2値を出力するイメージか。
+ 参考：http://scikit-learn.org/stable/modules/model_persistence.html
+
+ * write_python/write_congress.py (/opt/dma/lib/write_congress.py としてコピーorリンク)
+ Congressのデータを格納するスクリプト。
+ collectd-thresholdがNotificationしたデータを、
+ Congressの doctor datasource の events table に格納する。
+
+
+* ツール（デモ用途、デバッグ用途）
+
+ * tools/http_dummy/dummy_server.py
+ REST受取用。現状はPOSTで投げられたときのJSONの中身を出すのみ。
+ write_httpによる異常通知の動作確認用。
+ $ python tools/http_dummy/dummy_server.py
+
+ * tools/stress_tools/mem_stress.py
+ メモリ確保ツール。
+ 200M byteずつメモリ確保を16回、0.7秒ごとに実施して、最後に5秒その状態をキープ する場合
+ $ python tools/stress_tools/mem_stress.py 200m 16 0.7 5
+
+
+* （参考）今回におけるCongressの使い方
+
+ * データの確認
+ $ openstack congress datasource row list doctor events
+
+ * データクリア
+ $ openstack congress datasource row update doctor events '[]'
+
+
+以上
