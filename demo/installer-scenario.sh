@@ -6,7 +6,7 @@ function package-install () {
     sudo yum -y install epel-release
     sudo yum -y install collectd collectd-write_redis redis
     sudo yum -y install gcc gcc-c++ numpy python-devel python2-pip scipy
-    sudo pip install -U scikit-learn
+    sudo pip install -U scikit-learn redis
 }
 
 
@@ -15,6 +15,7 @@ DUMPFILE_DIR="/opt/dma/var/sklearn-dump"
 
 COLLECTD_DIR="/etc"
 COLLECTD_PLUGIN_DIR="/etc/collectd.d"
+COLLECTD_LOG_DIR="/var/log/"
 REDIS_DIR="/etc"
 
 if [ -z "$1" ]; then
@@ -34,6 +35,7 @@ sudo chmod 777 ${DUMPFILE_DIR}
 [ -f ${COLLECTD_PLUGIN_DIR}/thresholds.conf ] && sudo mv ${COLLECTD_PLUGIN_DIR}/thresholds.conf ${COLLECTD__PLUGIN_DIR}/thresholds.conf.org
 sudo cp collectd.conf ${COLLECTD_DIR}
 sudo cp redis.conf ${REDIS_DIR}
+[ -f ${COLLECTD_LOG_DIR}/collectd.log ] && sudo touch ${COLLECTD_LOG_DIR}/collectd.log
 
 sudo cp ${SCENARIO_DIR}/analysis/analysis.py ${SCENARIO_DIR}/write_python/write_congress.py ${LIBRARY_DIR}
 sudo cp ${SCENARIO_DIR}/dma.conf ${COLLECTD_PLUGIN_DIR}
