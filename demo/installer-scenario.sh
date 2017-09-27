@@ -4,8 +4,8 @@ cd `dirname $0`
 
 function package-install () {
     sudo yum -y install epel-release
-    sudo yum -y install collectd collectd-write_redis
-    sudo yum -y install gcc gcc-c++ numpy python-devel scipy
+    sudo yum -y install collectd collectd-write_redis redis
+    sudo yum -y install gcc gcc-c++ numpy python-devel python2-pip scipy
     sudo pip install -U scikit-learn
 }
 
