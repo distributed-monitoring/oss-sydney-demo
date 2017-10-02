@@ -37,7 +37,7 @@ sudo cp collectd.conf ${COLLECTD_DIR}
 sudo cp redis.conf ${REDIS_DIR}
 [ -f ${COLLECTD_LOG_DIR}/collectd.log ] && sudo touch ${COLLECTD_LOG_DIR}/collectd.log
 
-sudo cp ${SCENARIO_DIR}/analysis/analysis.py ${SCENARIO_DIR}/write_python/write_congress.py ${LIBRARY_DIR}
+sudo cp ${SCENARIO_DIR}/analysis/*.py transmitter/*.py ${LIBRARY_DIR}
 sudo cp ${SCENARIO_DIR}/dma.conf ${COLLECTD_PLUGIN_DIR}
 
 # is it better process restart function?
