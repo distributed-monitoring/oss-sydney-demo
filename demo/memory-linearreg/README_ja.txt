@@ -4,6 +4,7 @@
     write_httpは、別途立ち上げたManager serverのIPアドレスに書き換える。
     （:10021/failure1 は変更しない）
 
+   $ cp dma.conf_sample dma.conf
    $ vi dma.conf
 
 <Plugin python>
