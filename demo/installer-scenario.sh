@@ -6,6 +6,7 @@ function package-install () {
     sudo yum -y install epel-release
     sudo yum -y install collectd collectd-write_redis redis
     sudo yum -y install gcc gcc-c++ numpy python-devel python2-pip scipy
+    ## if you use proxy environment, use --proxy option in pip command 
     sudo pip install -U scikit-learn redis
 }
 
