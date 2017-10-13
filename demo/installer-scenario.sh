@@ -3,11 +3,16 @@ set -xe
 cd `dirname $0`
 
 function package-install () {
+    if [ "${http_proxy}" = "" ]; then
+        proxy_opt=""
+    else
+        proxy_opt="--proxy=${http_proxy}"
+    fi
+
     sudo yum -y install epel-release
     sudo yum -y install collectd collectd-write_redis redis
     sudo yum -y install gcc gcc-c++ numpy python-devel python2-pip scipy
-    ## if you use proxy environment, use --proxy option in pip command 
-    sudo pip install -U scikit-learn redis
+    sudo pip ${proxy_opt} install -U scikit-learn redis
 }
 
 
