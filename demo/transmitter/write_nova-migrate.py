@@ -25,6 +25,7 @@ class OSCliNova:
                                         password=password,
                                         project_id=tenant_name,
                                         auth_url=auth_url,
+                                        endpoint_type='internalURL',
                                         connection_pool=True)
         # print >> sys.stderr, (username, password, tenant_name, auth_url)
 
@@ -35,7 +36,7 @@ class OSCliNova:
             for hyper in hypervisors:
                 if hasattr(hyper, 'servers'):
                     for server in hyper.servers:
-                        self.novaclient.servers.live_migrate(server['uuid'], None, False, False)
+                        self.novaclient.servers.live_migrate(server['uuid'], None, True, False)
 
 
 cli = OSCliNova()
