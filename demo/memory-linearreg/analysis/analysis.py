@@ -56,5 +56,6 @@ def put_result(result):
 def configure(conf):
     print 'no conf'
 
+
 collectd.register_config(configure)
 collectd.register_read(lambda: put_result(analysis(read_redis())), 1)

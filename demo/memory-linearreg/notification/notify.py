@@ -61,6 +61,7 @@ def write_rest():
     logf.write('\n==================================\n')
     logf.close
 
+
 write_log()
 # write_rest()
 

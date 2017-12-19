@@ -59,6 +59,7 @@ class OSCliCongress:
 
             self.congress.update_datasource_rows('doctor', 'events', data)
 
+
 cli = OSCliCongress()
 
 collectd.register_config(cli.configure)

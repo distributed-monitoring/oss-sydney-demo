@@ -53,7 +53,8 @@ class OSCliNova:
             for hyper in hypervisors:
                 if hasattr(hyper, 'servers'):
                     for server in hyper.servers:
-                        self.novaclient.servers.live_migrate(server['uuid'], None, True, False)
+                        self.novaclient.servers.live_migrate(server['uuid'],
+                                                             None, True, False)
 
 
 cli = OSCliNova()
